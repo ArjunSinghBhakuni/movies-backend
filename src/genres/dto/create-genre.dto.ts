@@ -1,0 +1,3 @@
+import { IsNotEmpty } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+export class CreateGenreDto { @ApiProperty() @IsNotEmpty() name: string; }

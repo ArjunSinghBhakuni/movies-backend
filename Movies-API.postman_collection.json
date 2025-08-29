@@ -1,0 +1,410 @@
+{
+  "info": {
+    "name": "Movies API",
+    "_postman_id": "7c1db1b3-2d2d-46c2-8a9d-3c7e8a77b001",
+    "description": "NestJS Movies backend with JWT and S3. Token is auto-set after Register/Login.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"john\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch(e) {}",
+                  "if (json.token) {",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "  console.log('Token saved from Register (token)');",
+                  "} else if (json.access_token) {",
+                  "  pm.collectionVariables.set('token', json.access_token);",
+                  "  console.log('Token saved from Register (access_token)');",
+                  "} else {",
+                  "  console.warn('No token field found in Register response');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/auth",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "auth"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch(e) {}",
+                  "if (json.token) {",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "  console.log('Token saved from Login (token)');",
+                  "} else if (json.access_token) {",
+                  "  pm.collectionVariables.set('token', json.access_token);",
+                  "  console.log('Token saved from Login (access_token)');",
+                  "} else {",
+                  "  console.warn('No token field found in Login response');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Profile - Get (JWT)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Profile - Update (JWT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "profile"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"john-updated\",\n  \"password\": \"newpassword123\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users - Get All (Admin)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "logout"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.unset('token');",
+                  "console.log('Token cleared');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Genres",
+      "item": [
+        {
+          "name": "Create Genre (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/genre",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "genre"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Action\"\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Genre (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/genre/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "genre", "1"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Adventure\"\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Genre (Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/genre/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "genre", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Genres (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/genre/genres",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "genre", "genres"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Read Genre (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/genre/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "genre", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Movies",
+      "item": [
+        {
+          "name": "Create Movie (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/movies/create-movie",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "movies", "create-movie"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Inception\",\n  \"image\": \"\",\n  \"year\": 2010,\n  \"genreId\": 1,\n  \"detail\": \"A mind-bending heist.\",\n  \"cast\": [\"Leonardo DiCaprio\", \"Joseph Gordon-Levitt\"]\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Movie (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/movies/update-movie/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "movies", "update-movie", "1"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Inception 2\"\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Movie (Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/movies/delete-movie/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "movies", "delete-movie", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/movies/delete-comment",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "movies", "delete-comment"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"movieId\": 1,\n  \"reviewId\": 2\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Review (JWT)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/movies/1/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "movies", "1", "reviews"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Amazing!\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "All Movies (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/movies/all-movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "movies", "all-movies"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Specific Movie (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/movies/specific-movie/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "movies", "specific-movie", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Movies (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/movies/new-movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "movies", "new-movies"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Top Movies (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/movies/top-movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "movies", "top-movies"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Random Movies (Public)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/movies/random-movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "movies", "random-movies"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Uploads",
+      "item": [
+        {
+          "name": "Upload Image (JWT, multipart/form-data)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "upload"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "image", "type": "file", "src": [] },
+                { "key": "folder", "type": "text", "value": "posters" },
+                { "key": "makePublic", "type": "text", "value": "true" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" }
+  ]
+}
